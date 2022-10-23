@@ -1,6 +1,6 @@
 import React, { memo } from 'react'
 // @ts-ignore
-import { lexer } from 'css-tree'
+import * as csstree from 'css-tree'
 import './MatchGraph.css'
 
 type Elements = HTMLElement | SVGElement
@@ -61,7 +61,7 @@ const MatchGraph = (props: Props) => {
   if (typeof window === 'undefined') return null
 
   const { name } = props
-  const match = lexer.getProperty(name) ?? lexer.getType(name) // FIXME: check property or type
+  const match = csstree.lexer.getProperty(name) ?? csstree.lexer.getType(name) // FIXME: check property or type
   if (match === null) return null
   const walk = (node: MatchNode, container: Elements): boolean | never => {
     if (node.type === 'MatchGraph') {
