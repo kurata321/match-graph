@@ -13,8 +13,12 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "files": [
-    "dist"
+    "dist",
+    "package.json",
+    "README.md"
   ],
+
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c"
   },
@@ -40,6 +44,7 @@
     "@types/react": "^18.0.21",
     "autoprefixer": "^10.4.12",
     "rollup": "^2.79.1",
+    "rollup-plugin-dts": "^4.0.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-scss": "^3.0.0",

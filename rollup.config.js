@@ -2,10 +2,10 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import typescript from '@rollup/plugin-typescript';
-import { terser } from 'rollup-plugin-terser';
+import {terser} from 'rollup-plugin-terser';
 import external from 'rollup-plugin-peer-deps-external';
 import postcss from 'rollup-plugin-postcss';
-import autoprefixer from "autoprefixer";
+import dts from "rollup-plugin-dts";
 
 const packageJson = require('./package.json');
 
@@ -18,7 +18,6 @@ export default [
                 file: packageJson.main,
                 format: 'cjs',
                 sourcemap: true,
-                name: 'MatchGraph'
             },
             {
                 file: packageJson.module,
@@ -29,13 +28,24 @@ export default [
         plugins: [
             external(),
             json(),
-            nodeResolve({ extensions: ['.js', '.jsx', '.tsx'] }),
+            nodeResolve({extensions: ['.js', '.jsx', '.tsx']}),
             commonjs(),
-            typescript({ tsconfig: './tsconfig.json' }),
+            typescript({tsconfig: './tsconfig.json'}),
             postcss({
-                extensions: ['.css']
+                extensions: ['.css'],
+                modules: {
+                    scopeBehaviour: 'global',
+                },
+                sourceMap: true,
+                extract: true
             }),
             terser()
         ],
+    },
+    {
+        input: "dist/esm/index.d.ts",
+        output: [{file: "dist/index.d.ts", format: "esm"}],
+        plugins: [dts()],
+        external: [/\.(css|less|scss)$/],
     },
 ];
