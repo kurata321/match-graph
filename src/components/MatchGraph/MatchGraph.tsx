@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import React, {memo, useEffect, useState} from 'react'
 // @ts-ignore
 import * as csstree from 'css-tree'
 import './MatchGraph.css'
@@ -58,7 +58,12 @@ type Props = {
 }
 
 const MatchGraph = (props: Props) => {
-  if (typeof window === 'undefined') return null
+  const [onShow, setOnShow] = useState(false);
+  useEffect(() => {
+    setOnShow(true);
+  }, []);
+
+  if (!onShow || typeof window === 'undefined') return null
 
   const { name } = props
   const match = csstree.lexer.getProperty(name) ?? csstree.lexer.getType(name) // FIXME: check property or type
