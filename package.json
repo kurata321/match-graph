@@ -21,7 +21,7 @@
   "scripts": {
     "build": "rollup -c",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
+    "build-storybook": "storybook build -o storybook-page/story1 && storybook build -o storybook-page/story2",
     "deploy": "gh-pages -d storybook-static"
   },
   "browserslist": {
