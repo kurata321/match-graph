@@ -1,7 +1,14 @@
 {
   "name": "match-graph",
   "version": "0.1.1",
+  "license": "MIT",
   "description": "css-tree match graph create react component",
+  "scripts": {
+    "build": "tsup",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "deploy": "gh-pages -d storybook-static"
+  },
   "dependencies": {
     "css-tree": "^2.3.1",
     "postcss": "^8.4.21",
@@ -18,12 +25,6 @@
     "README.md"
   ],
   "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "rollup -c",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build",
-    "deploy": "gh-pages -d storybook-static"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -41,12 +42,6 @@
     "@babel/preset-env": "^7.20.2",
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.0",
-    "@rollup/plugin-babel": "^6.0.2",
-    "@rollup/plugin-commonjs": "^23.0.2",
-    "@rollup/plugin-json": "^5.0.1",
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-terser": "^0.3.0",
-    "@rollup/plugin-typescript": "^9.0.2",
     "@storybook/addon-actions": "^7.0.0-rc.4",
     "@storybook/addon-essentials": "^7.0.0-rc.4",
     "@storybook/addon-interactions": "^7.0.0-rc.4",
@@ -60,12 +55,8 @@
     "autoprefixer": "^10.4.12",
     "babel-loader": "^8.2.5",
     "prop-types": "^15.8.1",
-    "rollup": "^2.79.1",
-    "rollup-plugin-dts": "^4.0.1",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-scss": "^3.0.0",
     "storybook": "^7.0.0-rc.4",
+    "tsup": "^6.7.0",
     "typescript": "^4.8.4"
   },
   "peerDependencies": {
