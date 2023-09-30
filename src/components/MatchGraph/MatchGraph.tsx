@@ -1,6 +1,8 @@
+'use client'
+
 import React, {memo, useEffect, useState} from 'react'
 // @ts-ignore
-import * as csstree from 'css-tree'
+import { lexer } from 'css-tree'
 import './MatchGraph.css'
 
 type Elements = HTMLElement | SVGElement
@@ -29,6 +31,13 @@ function setupElement (el: Elements, attrs: any, children: any) {
   return el
 }
 
+const fixedValue = (value: string, syntax: any, isFunction: boolean) => {
+  if (isFunction) {
+    return `${syntax.terms[0].name}(${value})`
+  }
+  return value
+}
+
 function createElement (tag: string, attrs: any, children?: any) {
   return setupElement(document.createElement(tag), attrs, children) // FIXME: documentを使用しないようにリファクタリングする
 }
@@ -40,6 +49,24 @@ function createSvgElement (tag: string, attrs: any, children?: any) {
 function createText (text: string) {
   return document.createTextNode(String(text))
 }
+
+const MatchGraphConnectionMarker = () => (
+  <svg style={{ position: 'absolute', zIndex: -1, width: 0, height: 0 }}>
+    <marker
+      id="match-graph-connection-marker"
+      className={'match-graph-connection-end'}
+      viewBox="0 0 5 10"
+      refX="0"
+      refY="5"
+      markerUnits="strokeWidth"
+      markerWidth="6"
+      markerHeight="4"
+      orient="auto"
+    >
+      <path d="M 0 0 L 10 5 L 0 10 z"></path>
+    </marker>
+  </svg>
+)
 
 const SYNTAX_URL = 'https://csstree.github.io/docs/syntax/'
 
@@ -55,6 +82,7 @@ type MatchNode = {
 
 type Props = {
   name: string
+  value?: string
 }
 
 const MatchGraph = (props: Props) => {
@@ -65,9 +93,15 @@ const MatchGraph = (props: Props) => {
 
   if (!onShow || typeof window === 'undefined') return null
 
-  const { name } = props
-  const match = csstree.lexer.getProperty(name) ?? csstree.lexer.getType(name) // FIXME: check property or type
-  if (match === null) return null
+  const { name, value } = props
+  const data = lexer.getProperty(name) ?? lexer.getType(name)
+  if (data === null) return null
+
+  const syntax = data.syntax.terms[0]
+  const isFunction = syntax.type === 'Function'
+  const match = value ? lexer.match(data, fixedValue(value, data.syntax, isFunction)) : null
+  const matchStack = match?.matched?.match ?? []
+
   const walk = (node: MatchNode, container: Elements): boolean | never => {
     if (node.type === 'MatchGraph') {
       return walk(node.match, container)
@@ -192,9 +226,16 @@ const MatchGraph = (props: Props) => {
               break
           }
 
+          let isMatched = false
+          if (matchStack?.[0]?.syntax?.name === node.name) {
+            console.log(node.type, key)
+            console.log(...ifStack)
+            matchStack.shift()
+            isMatched = true
+          }
           mainEl.classList.add('node_check')
           mainEl.innerHTML =
-            '<span class="node__label">' + node.type + '</span>' +
+            `<span class="node__label${isMatched ? ' match' : ''}">` + node.type + '</span>' +
             '<span class="node__key">' + key + '</span>'
         }
         break
@@ -278,7 +319,7 @@ const MatchGraph = (props: Props) => {
   const matchTreeEl = createElement('div', 'graph')
   let matchTreeConnectionsEl: Elements
 
-  walk(match.match, matchTreeEl)
+  walk(data.match, matchTreeEl)
 
   matchTreeConnectionsEl = createSvgElement('svg', 'connections-canvas')
 
@@ -340,22 +381,5 @@ const MatchGraph = (props: Props) => {
     />
   </div>
 }
-
-const MatchGraphConnectionMarker = () => (
-  <svg style={{ position: 'absolute', zIndex: -1, width: 0, height: 0 }}>
-    <marker
-      id="match-graph-connection-marker"
-      viewBox="0 0 5 10"
-      refX="0"
-      refY="5"
-      markerUnits="strokeWidth"
-      markerWidth="6"
-      markerHeight="4"
-      orient="auto"
-    >
-      <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(160, 160, 160, 0.65)"></path>
-    </marker>
-  </svg>
-)
 
 export default memo(MatchGraph)
