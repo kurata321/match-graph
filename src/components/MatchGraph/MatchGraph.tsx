@@ -1,6 +1,6 @@
 'use client'
 
-import React, {memo, useEffect, useState} from 'react'
+import React from 'react'
 // @ts-ignore
 import { lexer } from 'css-tree'
 import './MatchGraph.css'
