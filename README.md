@@ -18,6 +18,3 @@ import { MatchGraph } from "match-graph";
 
 <MatchGraph name="border" />
 ```
-
-then... like this
-![img.png](img.png)
