@@ -1,6 +1,6 @@
 'use client'
 
-import React, {memo, useEffect, useState} from 'react'
+import React from 'react'
 // @ts-ignore
 import { lexer } from 'css-tree'
 import './MatchGraph.css'
@@ -29,6 +29,21 @@ function setupElement (el: Elements, attrs: any, children: any) {
   }
 
   return el
+}
+
+const getNodeValue = (node: any) => {
+  switch (node?.type) {
+    case 'Type':
+    case 'Property':
+    case 'Keyword':
+    case 'Function':
+      return node.name
+    case 'Token':
+    case 'String':
+      return node.value
+    case 'Comma':
+      return ','
+  }
 }
 
 const fixedValue = (value: string, syntax: any, isFunction: boolean) => {
@@ -78,6 +93,7 @@ type MatchNode = {
   map: any
   then: any
   else: any
+  syntax: any
 }
 
 type Props = {
@@ -86,12 +102,6 @@ type Props = {
 }
 
 const MatchGraph = (props: Props) => {
-  const [onShow, setOnShow] = useState(false);
-  useEffect(() => {
-    setOnShow(true);
-  }, []);
-
-  if (!onShow || typeof window === 'undefined') return null
 
   const { name, value } = props
   const data = lexer.getProperty(name) ?? lexer.getType(name)
@@ -102,7 +112,7 @@ const MatchGraph = (props: Props) => {
   const match = value ? lexer.match(data, fixedValue(value, data.syntax, isFunction)) : null
   const matchStack = match?.matched?.match ?? []
 
-  const walk = (node: MatchNode, container: Elements): boolean | never => {
+  const walk = (node: MatchNode, container: Elements, depth: number = 0): boolean | never => {
     if (node.type === 'MatchGraph') {
       return walk(node.match, container)
     }
@@ -227,16 +237,16 @@ const MatchGraph = (props: Props) => {
           }
 
           let isMatched = false
-          if (matchStack?.[0]?.syntax?.name === node.name) {
-            console.log(node.type, key)
-            console.log(...ifStack)
+          const stackValue = getNodeValue(matchStack?.[0]?.syntax)
+          const nodeValue = getNodeValue(node.syntax)
+          if (stackValue && nodeValue && stackValue === nodeValue && isParentMatch) {
             matchStack.shift()
             isMatched = true
           }
           mainEl.classList.add('node_check')
           mainEl.innerHTML =
             `<span class="node__label${isMatched ? ' match' : ''}">` + node.type + '</span>' +
-            '<span class="node__key">' + key + '</span>'
+            `<span class="node__key${isMatched ? ' match' : ''}">` + key + '</span>'
         }
         break
       }
@@ -277,8 +287,22 @@ const MatchGraph = (props: Props) => {
             )
           )
 
+          const stackValue = getNodeValue(matchStack?.[0]?.syntax)
+          const nodeValue = getNodeValue(value.syntax)
+          if (key === 'match' && stackValue && nodeValue && stackValue !== nodeValue) {
+            if (unMatchedDepth === null) {
+              unMatchedDepth = depth
+              isParentMatch = false
+            }
+          }
+
+          if (key === 'else' && unMatchedDepth === depth) {
+            unMatchedDepth = null
+            isParentMatch = true
+          }
+
           if (isNested) {
-            if (walk(value, nestedEl)) {
+            if (walk(value, nestedEl, depth + 1)) {
               // complex
               nestedSimpleEl = elByNode.get(value)
             } else {
@@ -313,6 +337,8 @@ const MatchGraph = (props: Props) => {
   const elByNode = new Map()
   const ifStack: MatchNode[] = []
   const laterConnections = []
+  let unMatchedDepth: null | number = null
+  let isParentMatch = true
   type Connections = { from: ChildNode | null | undefined; to: any; num: number; total: { count: number } }
   const connections: Connections[] = []
 
@@ -367,7 +393,7 @@ const MatchGraph = (props: Props) => {
           })
         )
       })
-  }, 0)
+  }, 100)
 
   return <div className="view-match-graph">
     <MatchGraphConnectionMarker />
@@ -382,4 +408,4 @@ const MatchGraph = (props: Props) => {
   </div>
 }
 
-export default memo(MatchGraph)
+export default MatchGraph

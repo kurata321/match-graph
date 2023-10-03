@@ -19,13 +19,15 @@ type Story = StoryObj<typeof MatchGraph>
 
 export const Border: Story = {
     args: {
-        name: 'border'
+        name: 'border',
+        value: '1px solid red'
     },
 }
 
 export const LinearGradient: Story = {
     args: {
-        name: 'linear-gradient()'
+        name: 'linear-gradient()',
+        value: 'red, blue'
     }
 }
 
@@ -38,5 +40,12 @@ export const BorderRadius: Story = {
 export const Width: Story = {
     args: {
         name: 'width'
+    }
+}
+
+export const WidthFit: Story = {
+    args: {
+        name: 'width',
+        value: 'fit-content(30px)'
     }
 }

@@ -2,6 +2,7 @@
     position: relative;
     white-space: pre;
     line-height: 12px;
+    overflow: auto;
 }
 
 .view-match-graph .node-count::after {
@@ -77,6 +78,15 @@
     padding: 0;
     border-radius: 3px;
 }
+.view-match-graph .node_check:has(.match) {
+    background-color: rgb(0 54 95);
+    font-weight: bold;
+    color: white;
+}
+.view-match-graph .node_check:has(.match) a {
+    color: white !important;
+    opacity: 1;
+}
 .dark .view-match-graph .node_check {
     background: rgb(28 67 109);
 }
@@ -106,8 +116,18 @@
 .dark .view-match-graph :is(.node__key, .node__label) {
     color: white;
 }
+.view-match-graph .node__label.match {
+    background-color: rgb(7 157 0);
+    color: white;
+    font-weight: bold;
+    text-decoration: underline;
+}
 .dark .view-match-graph .node__label {
     background-color: rgba(0, 0, 0, .3);
+}
+.dark .view-match-graph .node__label.match {
+    background-color: rgb(182 255 0);
+    color: black;
 }
 
 .view-match-graph .node__type {
