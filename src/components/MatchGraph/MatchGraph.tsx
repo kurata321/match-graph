@@ -393,7 +393,7 @@ const MatchGraph = (props: Props) => {
           })
         )
       })
-  }, 100)
+  }, 150)
 
   return <div className="view-match-graph">
     <MatchGraphConnectionMarker />
